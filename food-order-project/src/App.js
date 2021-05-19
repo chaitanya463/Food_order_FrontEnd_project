@@ -1,11 +1,27 @@
-import logo from './logo.svg';
-import './App.css';
+import React, {Fragment, useState} from 'react';
+import Header from './components/Layout/Header';
+import Meals from './components/Meals/Meals';
+import Cart from './components/Cart/Cart';
 
 function App() {
+
+  const [cartIsShown, setCartIsShown] = useState(false);
+
+  const showCartHandler = () => {
+    console.log('showCartHandler');
+    setCartIsShown(true);
+  };
+
+  const hideCartHandler = () => {
+    setCartIsShown(false);
+  };
+
   return (
-    <div >
-      <h2>Lets started!</h2>
-    </div>
+    <Fragment>
+      {cartIsShown && <Cart onClose={hideCartHandler}/>}
+      <Header onShowCart={showCartHandler} />
+      <Meals/>
+    </Fragment>
   );
 }
 
