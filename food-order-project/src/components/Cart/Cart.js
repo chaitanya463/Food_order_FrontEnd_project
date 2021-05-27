@@ -1,11 +1,14 @@
 import styles from './Cart.module.css';
 import Modal from '../UI/Modal';
-import {useContext} from 'react';
+import {useContext, useState} from 'react';
 import CartContext from '../../store/cart-context';
 import CartItem from './CartItem';
+import Checkout from './Checkout';
 
 const Cart = (props) => {
     const cartContext = useContext(CartContext);
+
+    const [isCheckOut, setCheckout] = useState(false);
 
     const cartItemRemoveHandler = (id) => {
         cartContext.removeItem(id);
@@ -13,6 +16,10 @@ const Cart = (props) => {
     const cartItemAddHandler = (item) => {
         cartContext.addItem({...item, amount: 1});
     }; 
+
+    const orderHandler = () => {
+        setCheckout(true);
+    };
 
     const cartItems = (
         <ul className={styles['cart-items']}>{cartContext.items.map((item) => ( 
@@ -27,10 +34,19 @@ const Cart = (props) => {
             ))}
         </ul>
     ) ;
+    const hasItems = cartContext.items.length > 0;
 
     const totalAmount = ` $ ${cartContext.totalAmount.toFixed(2)}`;
 
-    const hasItems = cartContext.items.length > 0;
+    const modalAction = (
+        <div className={styles.actions}>
+            <button className={styles['button--alt']} onClick={props.onClose}>Close</button>
+            {hasItems && <button className={styles.button} onClick = {orderHandler}>Order</button>}
+        </div>
+    );
+            
+
+    
     return (
         <Modal onClose={props.onClose}>
             {cartItems}
@@ -38,10 +54,9 @@ const Cart = (props) => {
                 <span>Total Amount</span>
                 <span> {totalAmount}</span>
             </div>
-            <div className={styles.actions}>
-                <button className={styles['button--alt']} onClick={props.onClose}>Close</button>
-                {hasItems && <button className={styles.button}>Order</button>}
-            </div>
+            { isCheckOut && <Checkout onCancel= {props.onClose}/>}
+            {!isCheckOut && modalAction}
+            
         </Modal>
     );
 };

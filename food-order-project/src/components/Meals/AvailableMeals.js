@@ -1,37 +1,41 @@
 import styles from './AvailableMeals.module.css';
 import Card from '../UI/Card';
 import MealItem from './MealItem/MealItem';
-
-const DUMMY_MEALS = [
-    {
-      id: 'm1',
-      name: 'Sushi',
-      description: 'Finest fish and veggies',
-      price: 22.99,
-    },
-    {
-      id: 'm2',
-      name: 'Schnitzel',
-      description: 'A german specialty!',
-      price: 16.5,
-    },
-    {
-      id: 'm3',
-      name: 'Barbecue Burger',
-      description: 'American, raw, meaty',
-      price: 12.99,
-    },
-    {
-      id: 'm4',
-      name: 'Green Bowl',
-      description: 'Healthy...and green...',
-      price: 18.99,
-    },
-  ];
+import {useCallback, useEffect, useState} from 'react'; 
 
 const AvailableMeals = () => {
 
-    const mealsList = DUMMY_MEALS.map( (meal) => (
+  const [isLoading, setIsLoading] = useState(false);
+  const [availableMeals, setAvailableMeals] = useState([]);
+  const [error, setError] = useState(null);
+
+  const fetchMeals = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const response = await fetch('https://react-http-dd09a-default-rtdb.firebaseio.com//MEALS.json');
+      if (!response.ok) {
+        throw new Error("Something went wrong");
+      }
+
+      const data = await response.json();
+      console.log(data);
+      const tranData = [];
+      for (const key in data) {
+        tranData.push(data[key]);
+      }
+      setAvailableMeals(tranData);
+    } catch (error) {
+      setError(error.message);
+    }
+    setIsLoading(false);
+  }, []);
+
+    useEffect(() => {
+      fetchMeals();
+    }, [fetchMeals]);
+
+    const mealsList = availableMeals.map( (meal) => (
         <MealItem 
             id= {meal.id}
             key={meal.id}
@@ -44,7 +48,10 @@ const AvailableMeals = () => {
     return (
         <section className={styles.meals}>
             <Card>
-                <ul>{mealsList}</ul>
+              {isLoading && !error && <p> Loading... </p>}
+              {!isLoading && error && <p> {error.message} </p>}
+              {!isLoading && availableMeals.length > 0 && <ul>{mealsList}</ul>}
+              {!isLoading && availableMeals.length === 0 && !error && <p> No meals found. </p>}
             </Card>
             
         </section>
