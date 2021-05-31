@@ -42,6 +42,12 @@
   .actions button:active {
     background-color: #ffe6dc;
   }
+
+  .actions button:hover:disabled,
+  .actions button:disabled {
+    border: 1px solid #aa9d98;
+    background-color: #aa9d98;
+  }
   
   .actions .submit {
     border: 1px solid #5a1a01;
@@ -55,6 +61,10 @@
   }
   
   .invalid label {
+    color: #ca3e51;
+  }
+
+  .error-text {
     color: #ca3e51;
   }
   
